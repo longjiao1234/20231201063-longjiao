@@ -45,6 +45,11 @@
         <h1>🎉 {{ title }}</h1>
         <div class="message">{{ message }}</div>
         
+        <div style="background: #27ae60; color: white; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h2>👨‍🎓 学生信息</h2>
+            <p style="font-size: 18px; margin: 0;">{{ student_info }}</p>
+        </div>
+        
         <h2>项目特性：</h2>
         <ul class="features">
             {% for feature in features %}
