@@ -17,12 +17,59 @@
             margin: 0 auto;
             padding: 20px;
         }
+        @keyframes hide {
+            0% {
+                opacity: 1;
+                height: 100%;
+                line-height: 100%;
+                padding: 20px;
+                margin-bottom: 10px;
+            }
+            75% {
+                opacity: 0;
+                height: 100%;
+                line-height: 100%;
+                padding: 20px;
+                margin-bottom: 10px;
+            }
+            100% {
+                opacity: 0;
+                height: 0px;
+                line-height: 0px;
+                padding: 0px;
+                margin-bottom: 0px;
+            }
+        }
+
         .post {
             background-color: #77dd11;
             padding: 20px;
             margin: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation-name: hide;
+            animation-duration: 2s;
+            animation-fill-mode: forwards;
+            animation-play-state: paused;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hide {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .hide:hover {
+            background-color: #cc0000;
         }
         .loading {
             text-align: center;
@@ -134,11 +181,25 @@
             // 创建新帖子
             const post = document.createElement('div');
             post.className = 'post';
-            post.innerHTML = contents;
+            post.innerHTML = `${contents} <button class="hide">隐藏</button>`;
 
             // 添加帖子到DOM
             document.querySelector('#posts').append(post);
         }
+
+        // 如果点击了隐藏按钮，删除帖子
+        document.addEventListener('click', event => {
+            // 找到点击的内容
+            const element = event.target;
+
+            // 检查用户是否点击了隐藏按钮
+            if (element.className === 'hide') {
+                element.parentElement.style.animationPlayState = 'running';
+                element.parentElement.addEventListener('animationend', () => {
+                    element.parentElement.remove();
+                });
+            }
+        });
     </script>
 </body>
 </html>
