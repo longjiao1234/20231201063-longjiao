@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <title>Math Game - Addition Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        #app {
+            text-align: center;
+            font-family: sans-serif;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+        #problem {
+            font-size: 72px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        input {
+            font-size: 1.2rem;
+            padding: 10px;
+            width: 80px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        #winner {
+            font-size: 72px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+        function App() {
+            // 使用useState钩子管理游戏状态
+            const [state, setState] = React.useState({
+                num1: Math.ceil(Math.random() * 10),
+                num2: Math.ceil(Math.random() * 10),
+                response: "",
+                score: 0
+            });
+
+            // 处理输入框变化
+            function updateResponse(event) {
+                setState({
+                    ...state,
+                    response: event.target.value
+                });
+            }
+
+            // 处理键盘事件（回车键）
+            function inputKeyPress(event) {
+                if (event.key === "Enter") {
+                    const answer = parseInt(state.response);
+                    if (answer === state.num1 + state.num2) {
+                        // 用户答对了
+                        setState({
+                            ...state,
+                            score: state.score + 1,
+                            response: "",
+                            num1: Math.ceil(Math.random() * 10),
+                            num2: Math.ceil(Math.random() * 10)
+                        });
+                    } else {
+                        // 用户答错了
+                        setState({
+                            ...state,
+                            score: state.score - 1,
+                            response: ""
+                        });
+                    }
+                }
+            }
+
+            // 检查胜利条件
+            if (state.score === 10) {
+                return (
+                    <div id="winner">You won!</div>
+                );
+            }
+
+            return (
+                <div>
+                    <h1>Math Addition Game</h1>
+                    <div id="problem">
+                        {state.num1} + {state.num2}
+                    </div>
+                    <input 
+                        value={state.response} 
+                        onChange={updateResponse}
+                        onKeyPress={inputKeyPress}
+                        placeholder="?"
+                        autoFocus
+                    />
+                    <div>Score: {state.score}</div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.querySelector("#app"));
+    </script>
+</body>
+</html>
