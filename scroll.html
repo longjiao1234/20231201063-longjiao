@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社交媒体无限滚动</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        @keyframes hide {
+            0% {
+                opacity: 1;
+                height: 100%;
+                line-height: 100%;
+                padding: 20px;
+                margin-bottom: 10px;
+            }
+            75% {
+                opacity: 0;
+                height: 100%;
+                line-height: 100%;
+                padding: 20px;
+                margin-bottom: 10px;
+            }
+            100% {
+                opacity: 0;
+                height: 0px;
+                line-height: 0px;
+                padding: 0px;
+                margin-bottom: 0px;
+            }
+        }
+
+        .post {
+            background-color: #77dd11;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation-name: hide;
+            animation-duration: 2s;
+            animation-fill-mode: forwards;
+            animation-play-state: paused;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hide {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .hide:hover {
+            background-color: #cc0000;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>社交媒体无限滚动</h1>
+        <p>向下滚动页面，帖子将自动加载</p>
+    </div>
+    
+    <div class="container">
+        <div id="posts"></div>
+    </div>
+
+    <script>
+        // 从第一个帖子开始
+        let counter = 1;
+        
+        // 每次加载20个帖子
+        const quantity = 20;
+        
+        // 加载状态标志
+        let isLoading = false;
+
+        // DOM加载完成后渲染前20个帖子
+        document.addEventListener('DOMContentLoaded', load);
+
+        // 滚动到底部时加载下一批帖子
+        window.onscroll = () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight && !isLoading) {
+                load();
+            }
+        };
+
+        // 加载下一批帖子
+        function load() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            
+            // 设置开始和结束的帖子编号，并更新计数器
+            const start = counter;
+            const end = start + quantity - 1;
+            counter = end + 1;
+
+            // 显示加载指示器
+            showLoadingIndicator();
+
+            // 模拟API请求延迟
+            setTimeout(() => {
+                // 模拟API响应数据
+                const postsData = {
+                    posts: []
+                };
+                
+                // 生成帖子列表
+                for (let i = start; i <= end; i++) {
+                    postsData.posts.push(`帖子 #${i}`);
+                }
+
+                // 添加帖子到DOM
+                postsData.posts.forEach(add_post);
+                
+                // 移除加载指示器
+                removeLoadingIndicator();
+                
+                isLoading = false;
+            }, 1000); // 1秒延迟，模拟网络请求
+        }
+
+        // 显示加载指示器
+        function showLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading';
+            loadingDiv.id = 'loading-indicator';
+            loadingDiv.textContent = '正在加载更多帖子...';
+            document.querySelector('#posts').appendChild(loadingDiv);
+        }
+
+        // 移除加载指示器
+        function removeLoadingIndicator() {
+            const loadingDiv = document.getElementById('loading-indicator');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        // 添加新帖子到DOM
+        function add_post(contents) {
+            // 创建新帖子
+            const post = document.createElement('div');
+            post.className = 'post';
+            post.innerHTML = `${contents} <button class="hide">隐藏</button>`;
+
+            // 添加帖子到DOM
+            document.querySelector('#posts').append(post);
+        }
+
+        // 如果点击了隐藏按钮，删除帖子
+        document.addEventListener('click', event => {
+            // 找到点击的内容
+            const element = event.target;
+
+            // 检查用户是否点击了隐藏按钮
+            if (element.className === 'hide') {
+                element.parentElement.style.animationPlayState = 'running';
+                element.parentElement.addEventListener('animationend', () => {
+                    element.parentElement.remove();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
